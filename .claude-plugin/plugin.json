@@ -1,0 +1,10 @@
+{
+  "name": "andthen",
+  "version": "1.0.0",
+  "description": "Queue ideas for Claude Code without interrupting — built for fast brains",
+  "author": "Ian Muench",
+  "keywords": ["queue", "ideas", "add", "adhd", "productivity", "hooks"],
+  "hooks": "hooks/hooks.json",
+  "skills": ["skills/andthen-usage"],
+  "commands": ["commands/andthen.md"]
+}

@@ -1,0 +1,23 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "command": "bash \"$CLAUDE_PLUGIN_DIR/hooks/check-queue.sh\"",
+        "timeout": 5000
+      }
+    ],
+    "Stop": [
+      {
+        "command": "bash \"$CLAUDE_PLUGIN_DIR/hooks/stop-check.sh\"",
+        "timeout": 5000
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "command": "bash \"$CLAUDE_PLUGIN_DIR/hooks/prompt-check.sh\"",
+        "timeout": 5000
+      }
+    ]
+  }
+}

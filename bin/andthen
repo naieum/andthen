@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+# andthen — queue ideas for Claude Code without interrupting
+# Usage: andthen "idea" | andthen -l | andthen -c | andthen -n
+
+set -euo pipefail
+
+QUEUE_FILE="$HOME/.claude/andthen-queue.jsonl"
+LOCK_DIR="$HOME/.claude/andthen-lock"
+
+# Colors
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+CYAN='\033[0;36m'
+DIM='\033[0;2m'
+BOLD='\033[1m'
+RESET='\033[0m'
+
+# Ensure queue directory exists
+mkdir -p "$(dirname "$QUEUE_FILE")"
+
+usage() {
+  echo -e "${BOLD}andthen${RESET} — queue ideas for Claude Code"
+  echo ""
+  echo -e "  ${CYAN}andthen${RESET} ${DIM}\"idea\"${RESET}        Queue an idea"
+  echo -e "  ${CYAN}at${RESET} ${DIM}\"idea\"${RESET}             Same thing, less typing"
+  echo -e "  ${CYAN}andthen${RESET}               Interactive mode (type ideas, one per line)"
+  echo -e "  ${CYAN}andthen${RESET} ${DIM}-l, --list${RESET}     View queued ideas"
+  echo -e "  ${CYAN}andthen${RESET} ${DIM}-c, --clear${RESET}    Clear the queue"
+  echo -e "  ${CYAN}andthen${RESET} ${DIM}-n, --count${RESET}    Count queued ideas"
+  echo -e "  ${CYAN}andthen${RESET} ${DIM}-h, --help${RESET}     Show this help"
+}
+
+queue_idea() {
+  local idea="$1"
+  local timestamp
+  timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+  # Build JSON line
+  local json
+  json=$(jq -cn --arg idea "$idea" --arg ts "$timestamp" '{idea: $idea, timestamp: $ts}')
+
+  # Acquire lock for safe concurrent writes
+  local retries=0
+  while ! mkdir "$LOCK_DIR" 2>/dev/null; do
+    retries=$((retries + 1))
+    if [ "$retries" -gt 50 ]; then
+      echo -e "${YELLOW}! Queue busy, writing anyway${RESET}" >&2
+      break
+    fi
+    sleep 0.01
+  done
+
+  # Append to queue
+  echo "$json" >> "$QUEUE_FILE"
+
+  # Release lock
+  rm -rf "$LOCK_DIR"
+
+  echo -e "${GREEN}+${RESET} Queued: ${BOLD}${idea}${RESET}"
+}
+
+list_queue() {
+  if [ ! -s "$QUEUE_FILE" ]; then
+    echo -e "${DIM}Queue is empty${RESET}"
+    return
+  fi
+
+  echo -e "${BOLD}Queued ideas:${RESET}"
+  local i=1
+  while IFS= read -r line; do
+    local idea
+    idea=$(echo "$line" | jq -r '.idea // empty' 2>/dev/null)
+    local ts
+    ts=$(echo "$line" | jq -r '.timestamp // empty' 2>/dev/null)
+    if [ -n "$idea" ]; then
+      echo -e "  ${CYAN}${i}.${RESET} ${idea} ${DIM}(${ts})${RESET}"
+      i=$((i + 1))
+    fi
+  done < "$QUEUE_FILE"
+}
+
+clear_queue() {
+  if [ ! -s "$QUEUE_FILE" ]; then
+    echo -e "${DIM}Queue already empty${RESET}"
+    return
+  fi
+
+  local count
+  count=$(wc -l < "$QUEUE_FILE" | tr -d ' ')
+  rm -f "$QUEUE_FILE"
+  echo -e "${GREEN}Cleared ${count} idea(s)${RESET}"
+}
+
+count_queue() {
+  if [ ! -s "$QUEUE_FILE" ]; then
+    echo "0"
+    return
+  fi
+  wc -l < "$QUEUE_FILE" | tr -d ' '
+}
+
+interactive_mode() {
+  echo -e "${BOLD}andthen${RESET} ${DIM}— type ideas, one per line (Ctrl+D to finish)${RESET}"
+  while IFS= read -r line; do
+    line=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    if [ -n "$line" ]; then
+      queue_idea "$line"
+    fi
+  done
+}
+
+# Parse arguments
+case "${1:-}" in
+  -h|--help)
+    usage
+    ;;
+  -l|--list)
+    list_queue
+    ;;
+  -c|--clear)
+    clear_queue
+    ;;
+  -n|--count)
+    count_queue
+    ;;
+  "")
+    # No args — interactive mode if stdin is a terminal, else read from pipe
+    if [ -t 0 ]; then
+      interactive_mode
+    else
+      while IFS= read -r line; do
+        line=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+        if [ -n "$line" ]; then
+          queue_idea "$line"
+        fi
+      done
+    fi
+    ;;
+  *)
+    # All remaining args joined as one idea
+    queue_idea "$*"
+    ;;
+esac

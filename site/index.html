@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>andthen — queue ideas without interrupting</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #000;
+  background: #fff;
+  padding: 3rem 1.5rem;
+}
+
+main {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+h2 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+b, strong {
+  font-weight: bold;
+}
+
+a {
+  color: #000;
+  text-decoration: underline;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.letter {
+  margin-bottom: 3rem;
+}
+
+.letter p {
+  margin-bottom: 0.75rem;
+}
+
+pre {
+  background: #f5f5f5;
+  padding: 1rem;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+code {
+  font-family: inherit;
+  font-size: 13px;
+}
+
+p code {
+  background: #f5f5f5;
+  padding: 0.15rem 0.35rem;
+}
+
+.diagram {
+  margin-bottom: 1rem;
+}
+
+.step {
+  margin-bottom: 1.5rem;
+}
+
+.step p {
+  margin-bottom: 0.5rem;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #000;
+  margin: 3rem 0;
+}
+
+.footer {
+  margin-top: 3rem;
+  font-size: 13px;
+}
+</style>
+</head>
+<body>
+<main>
+
+<h1>andthen</h1>
+<p>Queue ideas for Claude Code without interrupting.</p>
+
+<hr>
+
+<div class="letter">
+<p>Hey.</p>
+
+<p>If you're here, there's a chance your brain works like mine. Fast. Too fast, sometimes. You're working with Claude Code and it's mid-turn, editing files, running tests, doing its thing. And your brain fires: <b>"oh, also add rate limiting."</b></p>
+
+<p>But there's no way to say that. Claude is working. If you hit Ctrl+C you kill everything. If you wait, you'll forget. And if you're anything like me, you know that forgetting an idea doesn't mean it was bad — it means the window closed.</p>
+
+<p>I have ADD. Not the trendy kind. The kind where you lose your keys while holding them. The kind where a great idea arrives like lightning and leaves just as fast. For years I thought that was a flaw. That my brain was broken because it wouldn't slow down, wouldn't wait its turn, wouldn't behave.</p>
+
+<p>But it's not broken. It's fast. And fast brains deserve tools that keep up.</p>
+
+<p><b>andthen</b> is that tool. Open a second terminal. Type <code>at "your idea"</code>. Two characters and a thought. It queues silently, and the next time Claude pauses between tool calls, your idea arrives — warmly acknowledged, naturally woven into the work. No interruption. No lost thought. No guilt.</p>
+
+<p>Your stream of consciousness is not a bug. It's the feature.</p>
+
+<p>— Ian</p>
+</div>
+
+<hr>
+
+<h2>What it does</h2>
+
+<p><b>andthen</b> lets you queue ideas from a second terminal while Claude Code is working. Ideas arrive between tool calls — Claude acknowledges each one and keeps going. Nothing gets lost, nothing gets interrupted.</p>
+
+<h2>How it works</h2>
+
+<div class="diagram">
+<pre>Terminal 1 (Claude working)          Terminal 2 (your brain)
+─────────────────────────────        ─────────────────────────
+> Fix the auth bug
+[Claude reading files...]            $ at "also add rate limiting"
+[Claude editing code...]             + Queued: also add rate limiting
+[Hook injects idea ↓]
+"Love it — adding rate limiting"     $ at "oh and dark mode too"
+[Claude continues working...]        + Queued: oh and dark mode too</pre>
+</div>
+
+<p>Three hooks catch your ideas at different points:</p>
+<p><b>PostToolUse</b> — between every tool call. The instant path.<br>
+<b>Stop</b> — when Claude finishes its turn. Ideas block the stop, Claude continues.<br>
+<b>UserPromptSubmit</b> — when you type your next prompt. The safety net.</p>
+
+<hr>
+
+<h2>Install</h2>
+
+<div class="step">
+<p><b>Claude Code (plugin)</b></p>
+<pre>git clone https://github.com/naieum/andthen.git ~/.claude/plugins/andthen
+cd ~/.claude/plugins/andthen && bash bin/install.sh</pre>
+<p>Then use Claude Code with the plugin:</p>
+<pre>claude --plugin-dir ~/.claude/plugins/andthen</pre>
+</div>
+
+<div class="step">
+<p><b>Generic CLI (any terminal)</b></p>
+<pre>git clone https://github.com/naieum/andthen.git
+cd andthen && bash bin/install.sh</pre>
+<p>Now <code>at "your idea"</code> works from any terminal.</p>
+</div>
+
+<h2>Usage</h2>
+
+<pre># Queue an idea (2 characters!)
+at "add rate limiting"
+
+# Queue another
+at "oh and dark mode too"
+
+# View the queue
+andthen --list
+
+# Clear the queue
+andthen --clear</pre>
+
+<hr>
+
+<div class="footer">
+<p><a href="https://github.com/naieum/andthen">github.com/naieum/andthen</a></p>
+<p>MIT License. Built by Ian Muench.</p>
+</div>
+
+</main>
+</body>
+</html>
