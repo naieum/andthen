@@ -6,5 +6,5 @@
   "keywords": ["queue", "ideas", "add", "adhd", "productivity", "hooks"],
   "hooks": "hooks/hooks.json",
   "skills": ["skills/andthen-usage"],
-  "commands": ["commands/andthen.md"]
+  "commands": ["commands/add.md", "commands/andthen.md"]
 }

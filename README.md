@@ -6,19 +6,19 @@ Queue ideas for Claude Code without interrupting. Built for fast brains.
 
 You're working with Claude Code. It's mid-turn, editing files, running tests. Your brain fires off a great idea — "oh, also add rate limiting!" But there's no way to tell Claude without hitting Ctrl+C and killing its current work.
 
-**andthen** fixes this. Fire-and-forget idea queuing that hooks directly into Claude's processing loop.
+**andthen** fixes this. Type `/add` right inside Claude Code and your idea queues instantly.
 
 ## How it works
 
 ```
-Terminal 1 (Claude working)          Terminal 2 (your fast brain)
-─────────────────────────────        ─────────────────────────────
+Claude is working                    You type
+─────────────────────────────        ─────────────────────────
 > Fix the auth bug
-[Claude reading files...]            $ at "also add rate limiting"
-[Claude editing code...]             + Queued: also add rate limiting
+[Claude reading files...]            /add also add rate limiting
+[Claude editing code...]             + Added: also add rate limiting
 [Hook injects idea ↓]
-"Love it — adding rate limiting"     $ at "oh and dark mode too"
-[Claude continues working...]        + Queued: oh and dark mode too
+"Love it — adding rate limiting"     /add oh and dark mode too
+[Claude continues working...]        + Added: oh and dark mode too
 ```
 
 Three hooks catch your ideas at different points:
@@ -29,47 +29,35 @@ Three hooks catch your ideas at different points:
 ## Install
 
 ```bash
-# Clone or download
-cd andthen
-
-# Run installer (creates `andthen` and `at` symlinks)
-bash bin/install.sh
-
-# Use with Claude Code
-claude --plugin-dir ./
+git clone https://github.com/naieum/andthen.git ~/.claude/plugins/andthen
+claude --plugin-dir ~/.claude/plugins/andthen
 ```
+
+That's it. `/add` is now available inside Claude Code.
+
+**Want the CLI too?** For queuing ideas from a second terminal:
+
+```bash
+cd ~/.claude/plugins/andthen && bash bin/install.sh
+```
+
+Now `at "your idea"` works from any terminal.
 
 ## Usage
 
 ```bash
-# Queue an idea (2 characters!)
-at "add rate limiting"
-
-# Queue another
-at "oh and dark mode too"
+# Inside Claude Code — just type:
+/add rate limiting
+/add oh and dark mode too
 
 # View the queue
+/andthen
+
+# From a second terminal (after install.sh)
+at "add tests for the auth module"
 andthen --list
-andthen -l
-
-# Clear the queue
 andthen --clear
-andthen -c
-
-# Count queued ideas
-andthen --count
-andthen -n
-
-# Interactive mode (one idea per line, Ctrl+D to finish)
-andthen
-
-# Pipe ideas
-echo "add tests" | andthen
 ```
-
-## Inside Claude Code
-
-Use the `/andthen` slash command to view and manage the queue from within a Claude session.
 
 ## How Claude responds
 
@@ -91,7 +79,8 @@ One line, then back to work. No "hold on", no "that's a lot", no friction. Your 
 | Fast empty-queue bail | `[ ! -s file ]` is a single stat() call, <1ms on every tool call |
 | 3 hook points | Speed (PostToolUse) + completeness (Stop) + safety net (UserPromptSubmit) |
 | Stop throttle (2/60s) | Prevents infinite loops if ideas arrive faster than Claude processes |
-| `at` alias | 2 chars. Worth shadowing the rarely-used POSIX `at` scheduler |
+| `/add` command | Queue ideas without leaving Claude Code |
+| `at` alias | 2 chars from a second terminal. Worth shadowing the rarely-used POSIX `at` scheduler |
 
 ## Requirements
 

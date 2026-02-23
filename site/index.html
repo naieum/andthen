@@ -125,7 +125,7 @@ hr {
 
 <p>But it's not broken. It's fast. And fast brains deserve tools that keep up.</p>
 
-<p><b>andthen</b> is that tool. Open a second terminal. Type <code>at "your idea"</code>. Two characters and a thought. It queues silently, and the next time Claude pauses between tool calls, your idea arrives — warmly acknowledged, naturally woven into the work. No interruption. No lost thought. No guilt.</p>
+<p><b>andthen</b> is that tool. Type <code>/add rate limiting</code> right inside Claude Code. That's it. Your idea queues silently, and the next time Claude pauses between tool calls, it arrives — warmly acknowledged, naturally woven into the work. No interruption. No lost thought. No guilt.</p>
 
 <p>Your stream of consciousness is not a bug. It's the feature.</p>
 
@@ -136,19 +136,19 @@ hr {
 
 <h2>What it does</h2>
 
-<p><b>andthen</b> lets you queue ideas from a second terminal while Claude Code is working. Ideas arrive between tool calls — Claude acknowledges each one and keeps going. Nothing gets lost, nothing gets interrupted.</p>
+<p><b>andthen</b> is a Claude Code plugin. Type <code>/add</code> followed by your idea — it queues instantly. Between tool calls, Claude picks it up, acknowledges it, and keeps working. Nothing gets lost, nothing gets interrupted.</p>
 
 <h2>How it works</h2>
 
 <div class="diagram">
-<pre>Terminal 1 (Claude working)          Terminal 2 (your brain)
+<pre>Claude is working                    You type
 ─────────────────────────────        ─────────────────────────
 > Fix the auth bug
-[Claude reading files...]            $ at "also add rate limiting"
-[Claude editing code...]             + Queued: also add rate limiting
+[Claude reading files...]            /add also add rate limiting
+[Claude editing code...]             + Added: also add rate limiting
 [Hook injects idea ↓]
-"Love it — adding rate limiting"     $ at "oh and dark mode too"
-[Claude continues working...]        + Queued: oh and dark mode too</pre>
+"Love it — adding rate limiting"     /add oh and dark mode too
+[Claude continues working...]        + Added: oh and dark mode too</pre>
 </div>
 
 <p>Three hooks catch your ideas at different points:</p>
@@ -161,33 +161,30 @@ hr {
 <h2>Install</h2>
 
 <div class="step">
-<p><b>Claude Code (plugin)</b></p>
-<pre>git clone https://github.com/naieum/andthen.git ~/.claude/plugins/andthen
-cd ~/.claude/plugins/andthen && bash bin/install.sh</pre>
-<p>Then use Claude Code with the plugin:</p>
+<p><b>One command:</b></p>
+<pre>git clone https://github.com/naieum/andthen.git ~/.claude/plugins/andthen</pre>
+<p>Then start Claude Code with the plugin:</p>
 <pre>claude --plugin-dir ~/.claude/plugins/andthen</pre>
+<p>That's it. <code>/add</code> is now available inside Claude Code.</p>
 </div>
 
 <div class="step">
-<p><b>Generic CLI (any terminal)</b></p>
-<pre>git clone https://github.com/naieum/andthen.git
-cd andthen && bash bin/install.sh</pre>
-<p>Now <code>at "your idea"</code> works from any terminal.</p>
+<p><b>Want the CLI too?</b></p>
+<pre>cd ~/.claude/plugins/andthen && bash bin/install.sh</pre>
+<p>Now <code>at "your idea"</code> works from any terminal — queue ideas from a second window while Claude works.</p>
 </div>
 
 <h2>Usage</h2>
 
-<pre># Queue an idea (2 characters!)
-at "add rate limiting"
-
-# Queue another
-at "oh and dark mode too"
+<pre># Inside Claude Code
+/add rate limiting
+/add oh and dark mode too
 
 # View the queue
-andthen --list
+/andthen
 
-# Clear the queue
-andthen --clear</pre>
+# From a second terminal (after install.sh)
+at "add tests for the auth module"</pre>
 
 <hr>
 
