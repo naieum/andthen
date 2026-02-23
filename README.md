@@ -28,12 +28,21 @@ Three hooks catch your ideas at different points:
 
 ## Install
 
+**From inside Claude Code:**
+
+```
+/plugin marketplace add naieum/andthen
+/plugin install andthen@andthen
+```
+
+That's it. `/add` is now available. Updates come through the marketplace too.
+
+**Or manually:**
+
 ```bash
 git clone https://github.com/naieum/andthen.git ~/.claude/plugins/andthen
 claude --plugin-dir ~/.claude/plugins/andthen
 ```
-
-That's it. `/add` is now available inside Claude Code.
 
 **Want the CLI too?** For queuing ideas from a second terminal:
 

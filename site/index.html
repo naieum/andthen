@@ -161,17 +161,16 @@ hr {
 <h2>Install</h2>
 
 <div class="step">
-<p><b>One command:</b></p>
-<pre>git clone https://github.com/naieum/andthen.git ~/.claude/plugins/andthen</pre>
-<p>Then start Claude Code with the plugin:</p>
-<pre>claude --plugin-dir ~/.claude/plugins/andthen</pre>
-<p>That's it. <code>/add</code> is now available inside Claude Code.</p>
+<p><b>From inside Claude Code:</b></p>
+<pre>/plugin marketplace add naieum/andthen
+/plugin install andthen@andthen</pre>
+<p>That's it. <code>/add</code> is now available. Updates come through the marketplace too.</p>
 </div>
 
 <div class="step">
-<p><b>Want the CLI too?</b></p>
-<pre>cd ~/.claude/plugins/andthen && bash bin/install.sh</pre>
-<p>Now <code>at "your idea"</code> works from any terminal — queue ideas from a second window while Claude works.</p>
+<p><b>Or manually:</b></p>
+<pre>git clone https://github.com/naieum/andthen.git ~/.claude/plugins/andthen
+claude --plugin-dir ~/.claude/plugins/andthen</pre>
 </div>
 
 <h2>Usage</h2>

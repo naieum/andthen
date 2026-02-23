@@ -2,7 +2,13 @@
   "name": "andthen",
   "version": "1.0.0",
   "description": "Queue ideas for Claude Code without interrupting — built for fast brains",
-  "author": "Ian Muench",
+  "author": {
+    "name": "Ian Muench",
+    "email": "ian@naieum.com"
+  },
+  "homepage": "https://andthen.pages.dev",
+  "repository": "https://github.com/naieum/andthen",
+  "license": "MIT",
   "keywords": ["queue", "ideas", "add", "adhd", "productivity", "hooks"],
   "hooks": "hooks/hooks.json",
   "skills": ["skills/andthen-usage"],
